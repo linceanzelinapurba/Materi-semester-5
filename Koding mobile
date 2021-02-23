@@ -1,0 +1,151 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    home: Informasi(),
+  ));
+}
+
+class Mahasiswa {
+  String namamhs;
+  String jkelamin;
+  String jurusan;
+
+  Mahasiswa({this.namamhs, this.jkelamin, this.jurusan});
+}
+
+class Mahasiswalist {
+  static List<Mahasiswa> getMahasiswa() {
+    return [
+      Mahasiswa(
+        namamhs: 'Lince Anzelina Purba',
+        jkelamin: 'Perempuan',
+        jurusan: 'Sistem Informasi',
+      ),
+      Mahasiswa(
+        namamhs: 'Gisel Anastasya',
+        jkelamin: 'Perempuan',
+        jurusan: 'Management',
+      ),
+    ];
+  }
+}
+
+class Informasi extends StatefulWidget {
+  createState() => _InformasiState();
+}
+
+class _InformasiState extends State<Informasi> {
+  final List<Mahasiswa> mahasiswa = Mahasiswalist.getMahasiswa();
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Info Singkat Mahasiswa'),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+          icon: Icon(Icons.add),
+          label: Text('Input Data'),
+          onPressed: () {
+            // Navigasi ke rute kedua (Input Data).
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => InputData()),
+            );
+          }),
+      body: Container(
+        child: mahasiswa.length > 0
+            ? ListView.builder(
+                itemCount: mahasiswa.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final mhs = mahasiswa[index];
+
+                  return ListTile(
+                    leading: Icon(Icons.people),
+                    title: Text(mhs.namamhs),
+                    subtitle: Text(mhs.jkelamin),
+                    trailing: Text(mhs.jurusan),
+                  );
+                })
+            : Center(child: Text('Tidak Ada Data')),
+      ),
+    );
+  }
+}
+
+class InputData extends StatefulWidget {
+  createState() => _InputDataState();
+}
+
+class _InputDataState extends State<InputData> {
+  final _namamhs = TextEditingController();
+  String _jkelamin;
+  String _jurusan;
+  String _hasil;
+
+  onSimpan() {
+    setState(() {
+      _hasil = "${_namamhs.text} - $_jkelamin - $_jurusan";
+    });
+  }
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Input Data Mahasiswa"),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _namamhs,
+              decoration: InputDecoration(labelText: "Input Nama Mahasiswa"),
+            ),
+            RadioListTile(
+              title: Text('Laki-laki'),
+              value: 'Laki-laki',
+              groupValue: _jkelamin,
+              onChanged: (value) {
+                setState(() {
+                  _jkelamin = value;
+                });
+              },
+            ),
+            RadioListTile(
+              title: Text('Perempuan'),
+              value: 'Perempuan',
+              groupValue: _jkelamin,
+              onChanged: (value) {
+                setState(() {
+                  _jkelamin = value;
+                });
+              },
+            ),
+            DropdownButton(
+              isExpanded: true,
+              hint: Text('Pilih Jurusan'),
+              value: _jurusan,
+              items: ['Komputer', 'Sosiologi', 'Seni Budaya', 'Hukum', 'Pertanian', 'Lainya'].map((choice) {
+                return DropdownMenuItem(
+                  child: Text(choice),
+                  value: choice,
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _jurusan = value;
+                });
+              },
+            ),
+            RaisedButton(
+              child: Text("Simpan"),
+              onPressed: onSimpan,
+            ),
+            Text("$_hasil")
+          ],
+        ),
+      ),
+    );
+  }
+}
